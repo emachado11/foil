@@ -29,11 +29,6 @@
       font-weight: bold;
       user-select: none;
     }
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
     button {
       font-size: 24px;
       width: 60px;
@@ -51,28 +46,31 @@
   </div>
 
   <script>
-  const valueEl = document.getElementById('value');
-  const upBtn = document.getElementById('up');
-  const downBtn = document.getElementById('down');
+    const API = 'http://localhost:3000/contador';
+    const valueEl = document.getElementById('value');
+    const up = document.getElementById('up');
+    const down = document.getElementById('down');
 
-  const API = 'http://localhost:3000/contador';
+    async function atualizar() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        valueEl.textContent = data.value;
+      } catch (e) {
+        valueEl.textContent = '⚠️';
+      }
+    }
 
-  async function atualizar() {
-    const res = await fetch(API);
-    const data = await res.json();
-    valueEl.textContent = data.value;
-  }
+    async function alterar(op) {
+      await fetch(API + '?op=' + op, { method: 'POST' });
+      atualizar();
+    }
 
-  async function alterar(op) {
-    await fetch(API + '?op=' + op, { method: 'POST' });
+    up.addEventListener('click', () => alterar('inc'));
+    down.addEventListener('click', () => alterar('dec'));
+
+    setInterval(atualizar, 1000);
     atualizar();
-  }
-
-  upBtn.addEventListener('click', () => alterar('inc'));
-  downBtn.addEventListener('click', () => alterar('dec'));
-
-  setInterval(atualizar, 1000); // atualiza a cada 1s
-  atualizar();
-</script>
+  </script>
 </body>
 </html>
