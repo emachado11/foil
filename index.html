@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>foil</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .counter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .value {
+      font-size: 60px;
+      font-weight: bold;
+      user-select: none;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      font-size: 24px;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>foil</h1>
+  <div class="counter">
+    <button id="up">▲</button>
+    <div class="value" id="value">0</div>
+    <button id="down">▼</button>
+  </div>
+
+  <script>
+  const valueEl = document.getElementById('value');
+  const upBtn = document.getElementById('up');
+  const downBtn = document.getElementById('down');
+
+  const API = 'http://localhost:3000/contador';
+
+  async function atualizar() {
+    const res = await fetch(API);
+    const data = await res.json();
+    valueEl.textContent = data.value;
+  }
+
+  async function alterar(op) {
+    await fetch(API + '?op=' + op, { method: 'POST' });
+    atualizar();
+  }
+
+  upBtn.addEventListener('click', () => alterar('inc'));
+  downBtn.addEventListener('click', () => alterar('dec'));
+
+  setInterval(atualizar, 1000); // atualiza a cada 1s
+  atualizar();
+</script>
+</body>
+</html>
