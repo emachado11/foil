@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contador Foil</title>
+<title>Contador Foil Diva</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,17 @@
         <span id="count">0</span>
         <button id="increment">➡️</button>
     </div>
+
+    <div class="image-section">
+        <h2>Imagem compartilhada</h2>
+        <input type="text" id="image-url" placeholder="Cole a URL da imagem" />
+        <button id="update-image">Atualizar</button>
+        <div class="image-preview">
+            <img id="shared-image" src="" alt="Imagem compartilhada" />
+        </div>
+    </div>
 </div>
+
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
 <script src="client.js"></script>
 </body>
