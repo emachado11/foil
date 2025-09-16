@@ -54,19 +54,16 @@ imageInput.addEventListener('change', () => {
   const reader = new FileReader();
   reader.onload = () => {
     const dataUrl = reader.result;
-    adicionarImagem(dataUrl, nomeUsuario);
-    salvarImagem({ url: dataUrl, autor: nomeUsuario });
-    channel.publish('image', { url: dataUrl, autor: nomeUsuario });
+    adicionarImagem(dataUrl, nomeUsuario, true); // adiciona local e envia
   };
   reader.readAsDataURL(file);
 });
 
-channel.subscribe('image', msg => {
-  adicionarImagem(msg.data.url, msg.data.autor);
-  salvarImagem(msg.data);
-});
+// ---------- Função para adicionar imagens ----------
+function adicionarImagem(url, autor, enviar = false) {
+  // Evita duplicação
+  if ([...grid.querySelectorAll('img')].some(i => i.src === url)) return;
 
-function adicionarImagem(url, autor) {
   const wrapper = document.createElement('div');
 
   const img = document.createElement('img');
@@ -76,7 +73,7 @@ function adicionarImagem(url, autor) {
   img.addEventListener('click', () => {
     if (modoExcluir) {
       wrapper.remove();
-      removerImagem(url);
+      removerImagem(url, true);
     } else {
       abrirModal(url);
     }
@@ -84,22 +81,46 @@ function adicionarImagem(url, autor) {
 
   wrapper.appendChild(img);
   grid.prepend(wrapper);
+
+  if (enviar) {
+    salvarImagem({ url, autor });
+    channel.publish('image', { url, autor });
+  }
 }
 
+// ---------- Salvar e remover imagens ----------
 function salvarImagem(obj) {
   const lista = JSON.parse(localStorage.getItem('galeria') || '[]');
   if (!lista.some(i => i.url === obj.url)) lista.unshift(obj);
   localStorage.setItem('galeria', JSON.stringify(lista));
 }
 
-function removerImagem(url) {
+function removerImagem(url, enviar = false) {
   const lista = JSON.parse(localStorage.getItem('galeria') || '[]').filter(i => i.url !== url);
   localStorage.setItem('galeria', JSON.stringify(lista));
+  if (enviar) channel.publish('image', { url, excluir: true });
 }
 
+// ---------- Receber eventos de imagens ----------
+channel.subscribe('image', msg => {
+  if (msg.data.reset) {
+    grid.innerHTML = '';
+    localStorage.removeItem('galeria');
+  } else if (msg.data.excluir) {
+    // Excluir para todos
+    const img = [...grid.querySelectorAll('img')].find(i => i.src === msg.data.url);
+    if (img) img.parentElement.remove();
+    removerImagem(msg.data.url, false);
+  } else {
+    adicionarImagem(msg.data.url, msg.data.autor, false);
+    salvarImagem(msg.data);
+  }
+});
+
+// ---------- Carregar imagens salvas ----------
 function carregarImagens() {
   const lista = JSON.parse(localStorage.getItem('galeria') || '[]');
-  lista.forEach(i => adicionarImagem(i.url, i.autor));
+  lista.forEach(i => adicionarImagem(i.url, i.autor, false));
 }
 carregarImagens();
 
@@ -127,9 +148,12 @@ chatInput.addEventListener('keydown', e => {
 
 // Evita duplicação de mensagens próprias
 channel.subscribe('chat', msg => {
-  if (msg.data.autor !== nomeUsuario) {
+  if (!msg.data.reset && msg.data.autor !== nomeUsuario) {
     adicionarMsg(msg.data.text, msg.data.autor, false);
     salvarMsg(msg.data.text, msg.data.autor, false);
+  } else if (msg.data.reset) {
+    chatBox.innerHTML = '';
+    localStorage.removeItem('chat');
   }
 });
 
@@ -162,4 +186,36 @@ function carregarMsgs() {
 }
 carregarMsgs();
 
+// ---------- Resetar tudo ----------
+const resetBtn = document.createElement('button');
+resetBtn.id = 'reset';
+resetBtn.textContent = '🔄 Resetar Tudo';
+resetBtn.style.marginTop = '10px';
+document.getElementById('foil').appendChild(resetBtn);
 
+resetBtn.addEventListener('click', () => {
+  if (!confirm('Tem certeza que deseja resetar todos os valores?')) return;
+
+  // Resetar contador
+  currentCount = 0;
+  countEl.textContent = currentCount;
+  channel.publish('update', { count: currentCount });
+
+  // Resetar galeria
+  grid.innerHTML = '';
+  localStorage.removeItem('galeria');
+  channel.publish('image', { reset: true });
+
+  // Resetar chat
+  chatBox.innerHTML = '';
+  localStorage.removeItem('chat');
+  channel.publish('chat', { reset: true });
+
+  // Resetar inputs
+  nomeInput.value = '';
+  chatInput.value = '';
+  nomeUsuario = '';
+  chatInput.disabled = true;
+  sendBtn.disabled = true;
+  imageInput.disabled = true;
+});
