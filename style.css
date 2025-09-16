@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background: #1e1e1e;
+    color: #fff;
+}
+
+.counter {
+    text-align: center;
+    background: #333;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.controls {
+    margin-top: 20px;
+    font-size: 2rem;
+}
+
+button {
+    font-size: 2rem;
+    padding: 10px 20px;
+    margin: 0 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #555;
+    color: #fff;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #777;
+}
+
+#count {
+    min-width: 80px;
+    display: inline-block;
+    text-align: center;
+}

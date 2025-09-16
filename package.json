@@ -1,0 +1,13 @@
+{
+  "name": "foil-counter",
+  "version": "1.0.0",
+  "description": "Contador Foil em tempo real com WebSocket",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "express": "^4.18.2"
+  }
+}
