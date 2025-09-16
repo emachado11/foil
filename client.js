@@ -125,9 +125,12 @@ chatInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') enviarMsg();
 });
 
+// Evita duplicação de mensagens próprias
 channel.subscribe('chat', msg => {
-  adicionarMsg(msg.data.text, msg.data.autor, false);
-  salvarMsg(msg.data.text, msg.data.autor, false);
+  if (msg.data.autor !== nomeUsuario) {
+    adicionarMsg(msg.data.text, msg.data.autor, false);
+    salvarMsg(msg.data.text, msg.data.autor, false);
+  }
 });
 
 function enviarMsg() {

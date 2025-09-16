@@ -9,6 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow: hidden; /* impede scroll vertical */
 }
 
 header.page-title {
@@ -23,11 +24,11 @@ header.page-title {
 #main-container {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* 3 colunas iguais */
+  grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
   gap: 20px;
   padding: 20px;
   box-sizing: border-box;
-  height: calc(100vh - 80px); /* desconta altura do header */
+  height: calc(100vh - 80px);
 }
 
 /* ====== CARDS ====== */
@@ -38,7 +39,7 @@ header.page-title {
   display: flex;
   flex-direction: column;
   padding: 15px;
-  height: 100%; /* ocupa altura total da coluna */
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -138,8 +139,28 @@ header.page-title {
   word-wrap: break-word;
 }
 
-.msg.me { background: #3d5afe; float: right; clear: both; box-shadow: 0 0 10px #3d5afe; }
-.msg.other { background: #ba68c8; float: left; clear: both; box-shadow: 0 0 10px #ba68c8; }
+.msg.me {
+  background: #3d5afe;
+  float: right;
+  clear: both;
+  box-shadow: 0 0 10px #3d5afe;
+  text-align: right;
+}
+
+.msg.other {
+  background: #ba68c8;
+  float: left;
+  clear: both;
+  box-shadow: 0 0 10px #ba68c8;
+  text-align: left;
+}
+
+.msg small {
+  display: block;
+  font-size: 0.7rem;
+  color: #ccc;
+  margin-top: 4px;
+}
 
 #chat-controls {
   display: flex;
