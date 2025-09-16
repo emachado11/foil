@@ -1,54 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foil + Galeria + Chat</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foil + Galeria + Chat</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Título centralizado -->
-  <header class="page-title">Foil</header>
+<header class="page-title">Foil</header>
 
-  <!-- Container principal -->
-  <div id="main-container">
-    <!-- Galeria -->
-    <section id="galeria">
-      <header>
-        <h2>Galeria</h2>
-        <button id="btn-excluir" title="Excluir imagens">🗑️</button>
-      </header>
-      <input type="file" id="image-file" accept="image/*" disabled>
-      <div id="image-grid"></div>
-    </section>
+<div id="main-container">
+  <!-- Galeria -->
+  <section id="galeria">
+    <header>
+      <h2>Galeria</h2>
+      <button id="btn-excluir" title="Excluir imagens">🗑️</button>
+    </header>
+    <input type="file" id="image-file" accept="image/*" disabled>
+    <div id="image-grid"></div>
+  </section>
 
-    <!-- FOIL -->
-    <section id="foil">
-      <button id="increment">▲</button>
-      <div id="count">0</div>
-      <button id="decrement">▼</button>
-    </section>
+  <!-- FOIL -->
+  <section id="foil">
+    <button id="increment">▲</button>
+    <div id="count">0</div>
+    <button id="decrement">▼</button>
+  </section>
 
-    <!-- Chat -->
-    <section id="chat">
-      <label for="nome">Insira seu nome:</label>
-      <input type="text" id="nome" placeholder="Seu nome">
-      <h2>Chat Insano</h2>
-      <div id="chat-box"></div>
-      <div id="chat-controls">
-        <input type="text" id="chat-input" placeholder="Digite uma mensagem" disabled>
-        <button id="send-chat" disabled>Enviar</button>
-      </div>
-    </section>
-  </div>
+  <!-- Chat -->
+  <section id="chat">
+    <label for="nome">Insira seu nome:</label>
+    <input type="text" id="nome" placeholder="Seu nome">
+    <h2>Chat Insano</h2>
+    <div id="chat-box"></div>
+    <div id="chat-controls">
+      <input type="text" id="chat-input" placeholder="Digite uma mensagem" disabled>
+      <button id="send-chat" disabled>Enviar</button>
+    </div>
+  </section>
+</div>
 
-  <!-- Modal -->
-  <div id="modal">
-    <span onclick="fecharModal()">&times;</span>
-    <img id="modal-img">
-  </div>
-  
-  <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-  <script src="client.js"></script>
+<div id="modal">
+  <span onclick="fecharModal()">&times;</span>
+  <img id="modal-img">
+</div>
+
+<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+<script src="client.js"></script>
 </body>
 </html>
