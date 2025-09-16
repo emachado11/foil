@@ -1,33 +1,26 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    height: 100vh;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    min-height: 100vh;
     background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
     color: #fff;
     margin: 0;
+    padding: 20px;
 }
 
 .counter {
     text-align: center;
     background: #333;
-    padding: 50px;
+    padding: 40px;
     border-radius: 20px;
     box-shadow: 0 0 30px rgba(255,255,255,0.2);
-    max-width: 400px;
+    width: 400px;
 }
 
-.counter h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-}
-
-.controls {
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-}
-
+h1 { font-size: 3rem; margin-bottom: 20px; }
+.controls { font-size: 2.5rem; margin-bottom: 30px; }
 .controls button {
     font-size: 2rem;
     padding: 15px 25px;
@@ -39,56 +32,15 @@ body {
     color: #fff;
     transition: 0.3s;
 }
+.controls button:hover { background: #777; }
+#count { min-width: 100px; display: inline-block; text-align: center; }
 
-.controls button:hover {
-    background: #777;
-}
-
-#count {
-    display: inline-block;
-    min-width: 100px;
-    text-align: center;
-}
-
-.image-section {
+.image-section, .chat-section {
     margin-top: 20px;
     text-align: center;
 }
 
-.image-section h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-.image-section input {
-    width: 250px;
-    padding: 8px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: none;
-    margin-right: 10px;
-}
-
-.image-section button {
-    padding: 8px 15px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background: #555;
-    color: #fff;
-    transition: 0.3s;
-}
-
-.image-section button:hover {
-    background: #777;
-}
-
-.image-preview {
-    margin-top: 20px;
-    transition: all 0.3s ease-in-out;
-}
-
+.image-preview { margin-top: 20px; }
 .image-preview img {
     max-width: 300px;
     max-height: 300px;
@@ -96,3 +48,32 @@ body {
     box-shadow: 0 0 20px rgba(255,255,255,0.3);
     transition: all 0.3s ease-in-out;
 }
+
+.chat-section #chat-box {
+    height: 150px;
+    background: #222;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.chat-section input {
+    width: 70%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    margin-right: 5px;
+}
+
+.chat-section button {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #555;
+    color: #fff;
+    transition: 0.3s;
+}
+.chat-section button:hover { background: #777; }
