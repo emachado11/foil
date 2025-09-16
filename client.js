@@ -1,23 +1,27 @@
 const ably = new Ably.Realtime('umHU7A.hC4OoQ:aTXn36O3XZtSrRldLOSBsbajUB9z-pnvo0inyqAIJdU');
 const channel = ably.channels.get('foil-room');
 
-let currentCount = 0;
+let currentCount = Number(localStorage.getItem('contador') || 0);
 let nomeUsuario = '';
 let modoExcluir = false;
 
 // ---------- Contador ----------
 const countEl = document.getElementById('count');
+countEl.textContent = currentCount;
+
 document.getElementById('increment').onclick = () => atualizarContador(1);
 document.getElementById('decrement').onclick = () => atualizarContador(-1);
 
 channel.subscribe('update', msg => {
   currentCount = msg.data.count;
   countEl.textContent = currentCount;
+  localStorage.setItem('contador', currentCount);
 });
 
 function atualizarContador(delta) {
   currentCount = Math.max(0, currentCount + delta);
   countEl.textContent = currentCount;
+  localStorage.setItem('contador', currentCount);
   channel.publish('update', { count: currentCount });
 }
 
@@ -54,18 +58,15 @@ imageInput.addEventListener('change', () => {
   const reader = new FileReader();
   reader.onload = () => {
     const dataUrl = reader.result;
-    adicionarImagem(dataUrl, nomeUsuario, true); // adiciona local e envia
+    adicionarImagem(dataUrl, nomeUsuario, true);
   };
   reader.readAsDataURL(file);
 });
 
-// ---------- Função para adicionar imagens ----------
 function adicionarImagem(url, autor, enviar = false) {
-  // Evita duplicação
   if ([...grid.querySelectorAll('img')].some(i => i.src === url)) return;
 
   const wrapper = document.createElement('div');
-
   const img = document.createElement('img');
   img.src = url;
   img.title = autor;
@@ -88,7 +89,6 @@ function adicionarImagem(url, autor, enviar = false) {
   }
 }
 
-// ---------- Salvar e remover imagens ----------
 function salvarImagem(obj) {
   const lista = JSON.parse(localStorage.getItem('galeria') || '[]');
   if (!lista.some(i => i.url === obj.url)) lista.unshift(obj);
@@ -101,13 +101,11 @@ function removerImagem(url, enviar = false) {
   if (enviar) channel.publish('image', { url, excluir: true });
 }
 
-// ---------- Receber eventos de imagens ----------
 channel.subscribe('image', msg => {
   if (msg.data.reset) {
     grid.innerHTML = '';
     localStorage.removeItem('galeria');
   } else if (msg.data.excluir) {
-    // Excluir para todos
     const img = [...grid.querySelectorAll('img')].find(i => i.src === msg.data.url);
     if (img) img.parentElement.remove();
     removerImagem(msg.data.url, false);
@@ -117,12 +115,14 @@ channel.subscribe('image', msg => {
   }
 });
 
-// ---------- Carregar imagens salvas ----------
-function carregarImagens() {
-  const lista = JSON.parse(localStorage.getItem('galeria') || '[]');
-  lista.forEach(i => adicionarImagem(i.url, i.autor, false));
-}
-carregarImagens();
+// Recupera histórico de imagens do Ably
+channel.history((err, page) => {
+  if (err) return console.error(err);
+  const imagens = page.items.filter(i => i.name === 'image');
+  imagens.forEach(msg => {
+    if (!msg.data.excluir && !msg.data.reset) adicionarImagem(msg.data.url, msg.data.autor, false);
+  });
+});
 
 // ---------- Modal ----------
 const modal = document.getElementById('modal');
@@ -146,14 +146,13 @@ chatInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') enviarMsg();
 });
 
-// Evita duplicação de mensagens próprias
 channel.subscribe('chat', msg => {
-  if (!msg.data.reset && msg.data.autor !== nomeUsuario) {
-    adicionarMsg(msg.data.text, msg.data.autor, false);
-    salvarMsg(msg.data.text, msg.data.autor, false);
-  } else if (msg.data.reset) {
+  if (msg.data.reset) {
     chatBox.innerHTML = '';
     localStorage.removeItem('chat');
+  } else if (msg.data.autor !== nomeUsuario) {
+    adicionarMsg(msg.data.text, msg.data.autor, false);
+    salvarMsg(msg.data.text, msg.data.autor, false);
   }
 });
 
@@ -180,13 +179,22 @@ function salvarMsg(texto, autor, meu) {
   localStorage.setItem('chat', JSON.stringify(msgs));
 }
 
+// Recupera histórico do chat do Ably
+channel.history((err, page) => {
+  if (err) return console.error(err);
+  const msgs = page.items.filter(i => i.name === 'chat');
+  msgs.forEach(msg => {
+    if (!msg.data.reset) adicionarMsg(msg.data.text, msg.data.autor, msg.data.autor === nomeUsuario);
+  });
+});
+
+carregarMsgs();
 function carregarMsgs() {
   const msgs = JSON.parse(localStorage.getItem('chat') || '[]');
   msgs.forEach(m => adicionarMsg(m.text, m.autor, m.meu));
 }
-carregarMsgs();
 
-// ---------- Resetar tudo ----------
+// ---------- Reset ----------
 const resetBtn = document.createElement('button');
 resetBtn.id = 'reset';
 resetBtn.textContent = '🔄 Resetar Tudo';
@@ -196,22 +204,19 @@ document.getElementById('foil').appendChild(resetBtn);
 resetBtn.addEventListener('click', () => {
   if (!confirm('Tem certeza que deseja resetar todos os valores?')) return;
 
-  // Resetar contador
   currentCount = 0;
   countEl.textContent = currentCount;
+  localStorage.setItem('contador', currentCount);
   channel.publish('update', { count: currentCount });
 
-  // Resetar galeria
   grid.innerHTML = '';
   localStorage.removeItem('galeria');
   channel.publish('image', { reset: true });
 
-  // Resetar chat
   chatBox.innerHTML = '';
   localStorage.removeItem('chat');
   channel.publish('chat', { reset: true });
 
-  // Resetar inputs
   nomeInput.value = '';
   chatInput.value = '';
   nomeUsuario = '';
