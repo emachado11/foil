@@ -1,70 +1,208 @@
+/* ====== GLOBAL ====== */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #1e1e1e;
-  color: #fff;
-  display: grid;
-  grid-template-columns: 1fr 300px 1fr;
-  gap: 20px;
-  padding: 20px;
+  padding: 0;
   height: 100vh;
+  background: #121212;
+  color: #eee;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
-#galeria, #foil, #chat {
-  background: #2b2b2b;
-  border-radius: 12px;
-  padding: 20px;
-}
-
-#foil {
+header.page-title {
   text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  padding: 20px 0;
+  color: #fff;
 }
 
-.controls {
-  margin-top: 20px;
+/* ====== CONTAINER PRINCIPAL ====== */
+#main-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3 colunas iguais */
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  height: calc(100vh - 80px); /* desconta altura do header */
 }
 
-#count {
-  display: inline-block;
-  width: 60px;
-  font-size: 2rem;
+/* ====== CARDS ====== */
+#galeria, #foil, #chat {
+  border: 3px solid #444;
+  border-radius: 8px;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  height: 100%; /* ocupa altura total da coluna */
+  box-sizing: border-box;
+}
+
+/* ====== GALERIA ====== */
+#galeria header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 #image-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+#image-grid div {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #222;
 }
 
 #image-grid img {
   width: 100%;
-  height: auto;
-  border-radius: 6px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#image-grid img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #3d5afe;
+}
+
+/* ====== FOIL ====== */
+#foil {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#count {
+  font-size: 3rem;
+  margin: 20px 0;
+  text-shadow: 0 0 10px #3d5afe;
+}
+
+#foil button {
+  font-size: 2.5rem;
+  padding: 10px 20px;
+  margin: 5px 0;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: #3d5afe;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#foil button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #3d5afe;
+}
+
+/* ====== CHAT ====== */
+#chat {
+  justify-content: space-between;
 }
 
 #chat-box {
-  height: 60vh;
+  flex: 1;
   overflow-y: auto;
   background: #222;
-  border-radius: 8px;
   padding: 10px;
-  margin-bottom: 8px;
+  border: 2px solid #555;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  scroll-behavior: smooth;
 }
 
 .msg {
-  padding: 4px 6px;
-  margin: 4px 0;
-  border-radius: 5px;
+  display: inline-block;
+  max-width: 70%;
+  padding: 8px 12px;
+  margin: 4px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #fff;
+  word-wrap: break-word;
 }
 
-.msg.me {
-  background: #444;
-  text-align: right;
+.msg.me { background: #3d5afe; float: right; clear: both; box-shadow: 0 0 10px #3d5afe; }
+.msg.other { background: #ba68c8; float: left; clear: both; box-shadow: 0 0 10px #ba68c8; }
+
+#chat-controls {
+  display: flex;
+  gap: 5px;
 }
 
-.msg.other {
-  background: #555;
-  text-align: left;
+#chat-controls input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #222;
+  color: #fff;
+}
+
+#chat-controls button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #3d5afe;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#chat-controls button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #3d5afe;
+}
+
+/* ====== MODAL ====== */
+#modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s;
+}
+
+#modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+  box-shadow: 0 0 30px #3d5afe;
+}
+
+#modal span {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #fff;
+  font-size: 50px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
