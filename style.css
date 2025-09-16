@@ -9,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden; /* impede scroll vertical */
+  overflow: hidden; /* bloqueia scroll geral */
 }
 
 header.page-title {
@@ -39,8 +39,9 @@ header.page-title {
   display: flex;
   flex-direction: column;
   padding: 15px;
-  height: 100%;
+  height: 100%; /* ocupa altura total da coluna */
   box-sizing: border-box;
+  overflow: hidden; /* impede overflow externo */
 }
 
 /* ====== GALERIA ====== */
@@ -56,7 +57,7 @@ header.page-title {
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* scroll interno */
 }
 
 #image-grid div {
@@ -115,11 +116,13 @@ header.page-title {
 /* ====== CHAT ====== */
 #chat {
   justify-content: space-between;
+  display: flex;
+  flex-direction: column;
 }
 
 #chat-box {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* scroll interno */
   background: #222;
   padding: 10px;
   border: 2px solid #555;

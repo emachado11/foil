@@ -161,3 +161,5 @@ function carregarMsgs() {
   msgs.forEach(m => adicionarMsg(m.text, m.autor, m.meu));
 }
 carregarMsgs();
+
+
