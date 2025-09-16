@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foil Diva + Imagem + Chat</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Foil + Galeria + Chat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="counter">
-<h1>Foil</h1>
-<div class="controls">
-<button id="decrement">⬅️</button>
-<span id="count">0</span>
-<button id="increment">➡️</button>
-</div>
+  <div id="galeria">
+    <h2>galeria</h2>
+    <input type="file" id="image-file">
+    <div id="image-grid"></div>
+  </div>
 
+  <div id="foil">
+    <h1>FOIL</h1>
+    <div class="controls">
+      <button id="decrement">⬆️</button>
+      <span id="count">0</span>
+      <button id="increment">⬇️</button>
+    </div>
+  </div>
 
-<div class="image-section">
-<h2>Galeria</h2>
-<input type="file" id="image-file" />
-<div id="image-grid"></div>
-</div>
+  <div id="chat">
+    <h2>chat insano</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="chat-input" placeholder="Digite uma mensagem">
+    <button id="send-chat">Enviar</button>
+  </div>
 
-
-<div class="chat-section">
-<h2>Chat</h2>
-<div id="chat-box"></div>
-<input type="text" id="chat-input" placeholder="Digite uma mensagem" />
-<button id="send-chat">Enviar</button>
-</div>
-</div>
-
-
-<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-<script src="client.js"></script>
+  <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+  <script src="client.js"></script>
 </body>
 </html>

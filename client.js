@@ -1,111 +1,102 @@
-// Substitua pela sua chave Ably gratuita
-channel.subscribe('update', msg => {
-currentCount = msg.data.count;
-countEl.textContent = currentCount;
-});
+const ably = new Ably.Realtime('SUA_CHAVE_DO_ABLY');
+const channel = ably.channels.get('foil-counter');
 
+// -------- Contador --------
+const countEl = document.getElementById('count');
+let currentCount = 0;
+
+channel.subscribe('update', msg => {
+  currentCount = msg.data.count;
+  countEl.textContent = currentCount;
+});
 
 function updateCount(delta) {
-currentCount += delta;
-if(currentCount < 0) currentCount = 0;
-channel.publish('update', { count: currentCount });
+  currentCount += delta;
+  if (currentCount < 0) currentCount = 0;
+  channel.publish('update', { count: currentCount });
 }
 
+document.getElementById('increment').onclick = () => updateCount(1);
+document.getElementById('decrement').onclick = () => updateCount(-1);
 
-incrementBtn.addEventListener('click', () => updateCount(1));
-decrementBtn.addEventListener('click', () => updateCount(-1));
-
-
-// -------- GALERIA --------
-const imageFileInput = document.getElementById('image-file');
+// -------- Galeria --------
+const imageInput = document.getElementById('image-file');
 const imageGrid = document.getElementById('image-grid');
 
-
 function addImage(url) {
-const img = document.createElement('img');
-img.src = url;
-imageGrid.prepend(img);
+  const img = document.createElement('img');
+  img.src = url;
+  imageGrid.prepend(img);
 }
 
-
-imageFileInput.addEventListener('change', () => {
-const file = imageFileInput.files[0];
-if (!file) return;
-const reader = new FileReader();
-reader.onload = () => {
-const dataUrl = reader.result;
-addImage(dataUrl);
-saveImage(dataUrl);
-channel.publish('image', { url: dataUrl });
-};
-reader.readAsDataURL(file);
+imageInput.addEventListener('change', () => {
+  const file = imageInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    addImage(dataUrl);
+    saveImage(dataUrl);
+    channel.publish('image', { url: dataUrl });
+  };
+  reader.readAsDataURL(file);
 });
-
 
 channel.subscribe('image', msg => {
-addImage(msg.data.url);
-saveImage(msg.data.url);
+  addImage(msg.data.url);
+  saveImage(msg.data.url);
 });
 
-
 function saveImage(url) {
-const list = JSON.parse(localStorage.getItem('gallery') || '[]');
-list.unshift(url);
-localStorage.setItem('gallery', JSON.stringify(list));
+  const list = JSON.parse(localStorage.getItem('gallery') || '[]');
+  list.unshift(url);
+  localStorage.setItem('gallery', JSON.stringify(list));
 }
 
-
 function loadImages() {
-const list = JSON.parse(localStorage.getItem('gallery') || '[]');
-list.forEach(addImage);
+  (JSON.parse(localStorage.getItem('gallery') || '[]')).forEach(addImage);
 }
 loadImages();
 
-
-// -------- CHAT --------
+// -------- Chat --------
 const chatBox = document.getElementById('chat-box');
 const chatInput = document.getElementById('chat-input');
-const sendChatBtn = document.getElementById('send-chat');
+const sendBtn = document.getElementById('send-chat');
 
-
-function addMessage(text) {
-const p = document.createElement('p');
-p.textContent = text;
-chatBox.appendChild(p);
-chatBox.scrollTop = chatBox.scrollHeight;
+function addMessage(text, fromMe) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (fromMe ? 'me' : 'other');
+  div.textContent = text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-
-function saveMessage(text) {
-const msgs = JSON.parse(localStorage.getItem('chat') || '[]');
-msgs.push(text);
-localStorage.setItem('chat', JSON.stringify(msgs));
+function saveMessage(msg) {
+  const list = JSON.parse(localStorage.getItem('chat') || '[]');
+  list.push(msg);
+  localStorage.setItem('chat', JSON.stringify(list));
 }
-
 
 function loadMessages() {
-const msgs = JSON.parse(localStorage.getItem('chat') || '[]');
-msgs.forEach(addMessage);
+  (JSON.parse(localStorage.getItem('chat') || '[]'))
+    .forEach(m => addMessage(m.text, m.fromMe));
 }
 loadMessages();
 
-
-sendChatBtn.addEventListener('click', () => {
-const text = chatInput.value.trim();
-if (!text) return;
-addMessage(text);
-saveMessage(text);
-channel.publish('chat', { text });
-chatInput.value = '';
-});
-
+sendBtn.onclick = () => {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  addMessage(text, true);
+  saveMessage({ text, fromMe: true });
+  channel.publish('chat', { text });
+  chatInput.value = '';
+};
 
 chatInput.addEventListener('keydown', e => {
-if (e.key === 'Enter') sendChatBtn.click();
+  if (e.key === 'Enter') sendBtn.click();
 });
 
-
 channel.subscribe('chat', msg => {
-addMessage(msg.data.text);
-saveMessage(msg.data.text);
+  addMessage(msg.data.text, false);
+  saveMessage({ text: msg.data.text, fromMe: false });
 });
